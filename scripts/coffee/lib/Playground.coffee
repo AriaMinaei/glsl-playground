@@ -18,7 +18,10 @@ module.exports = class Playground
 
 		request
 		.get('/?getPlaygroundConfig=' + @pgName)
+		.timeout(500)
 		.end (res) =>
+
+			setTimeout @_requestUpdate, 400
 
 			config = JSON.parse res.text
 
@@ -30,7 +33,6 @@ module.exports = class Playground
 
 	_updateIfNecessary: (config) ->
 
-		setTimeout @_requestUpdate, 400
 
 		return if config.updateTime is @_updateTime
 
