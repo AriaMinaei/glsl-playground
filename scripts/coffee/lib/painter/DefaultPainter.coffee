@@ -6,6 +6,8 @@ module.exports = class DefaultPainter
 
 	constructor: (@gila) ->
 
+		@gila.depthTesting.disable()
+
 		@_layers = {}
 
 		@_shaders = frag: {}, vert: {}
@@ -148,6 +150,14 @@ module.exports = class DefaultPainter
 
 			@_layers[name] = new Layer @, vert, frag, @_sharedUniforms
 
+			unless layer.blend?
+
+				@_layers[name].blend yes, 'srcAlpha', 'oneMinusSrcAlpha'
+
+			else
+
+				@_layers[name].blend yes, layer.blend.src, layer.blend.dst
+
 		@
 
 	play: ->
@@ -169,6 +179,12 @@ module.exports = class DefaultPainter
 	_paint: =>
 
 		return if @paused
+
+		@gila.blending.enable()
+
+
+
+		gl = @gila.gl
 
 		@gila.clear()
 

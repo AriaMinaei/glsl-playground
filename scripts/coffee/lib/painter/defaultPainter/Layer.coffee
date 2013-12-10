@@ -26,9 +26,37 @@ module.exports = class Layer
 
 		@uniforms = {}
 
+		@_blendingEnabled = no
+
+		@_blendingConfig =
+
+			src: 'one'
+
+			dst: 'zero'
+
+	blend: (enable, src, dst) ->
+
+		@_blendingEnabled = Boolean enable
+
+		@_blendingConfig.src = src
+		@_blendingConfig.dst = dst
+
+		@
+
 	render: ->
 
 		@program.activate()
+
+		if @_blendingEnabled
+
+			@gila.blending.enable()
+
+			@gila.blend.src[@_blendingConfig.src]()
+			@gila.blend.dst[@_blendingConfig.dst]()
+
+		else
+
+			@gila.blending.disable()
 
 		for name, u of @sharedUniforms
 
