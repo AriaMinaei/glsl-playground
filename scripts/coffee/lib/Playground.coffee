@@ -30,11 +30,11 @@ module.exports = class Playground
 
 	_updateIfNecessary: (config) ->
 
-
-
 		setTimeout @_requestUpdate, 1000
 
 		return if config.updateTime is @_updateTime
+
+		console.log 'updating'
 
 		@_updateTime = config.updateTime
 

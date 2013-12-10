@@ -22,6 +22,33 @@ module.exports = class DefaultPainter
 
 		@timing.start()
 
+		@_sharedUniforms =
+
+			time:
+
+				type: '1f'
+
+				array: new Float32Array [0]
+
+			mouse:
+
+				type: '2f'
+
+				array: new Float32Array 2
+
+		do =>
+
+			pos = @_sharedUniforms.mouse.array
+
+			window.addEventListener 'mousemove', ->
+
+				pos[0] = (event.x / window.innerHeight)
+				pos[1] = (event.y / window.innerWidth)
+
+			return
+
+
+
 	addVertexShader: (name, source) ->
 
 		@_shaders.vert[name] = @gila.getVertexShader '' + name + (++shadersCount),
@@ -86,7 +113,7 @@ module.exports = class DefaultPainter
 
 				vert = @_shaders.vert['default']
 
-			@_layers[name] = new Layer @, vert, frag
+			@_layers[name] = new Layer @, vert, frag, @_sharedUniforms
 
 		@
 
@@ -111,6 +138,8 @@ module.exports = class DefaultPainter
 		return if @paused
 
 		@gila.clear()
+
+		@_sharedUniforms.time.array[0] = @timing.time
 
 		for name, layer of @_layers
 

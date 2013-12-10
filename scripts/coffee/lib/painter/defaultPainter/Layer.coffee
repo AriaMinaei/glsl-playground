@@ -1,3 +1,5 @@
+{object} = require 'utila'
+
 module.exports = class Layer
 
 	self = @
@@ -12,7 +14,7 @@ module.exports = class Layer
 		 1,  1, 0
 	]
 
-	constructor: (@painter, @vert, @frag, @uniforms = {}) ->
+	constructor: (@painter, @vert, @frag, uniforms = {}) ->
 
 		@gila = @painter.gila
 
@@ -21,6 +23,8 @@ module.exports = class Layer
 		@_vxBuffer = @gila.makeArrayBuffer().data self._vertices
 
 		@_vxAttr = @program.attr('vx').enable().readAsFloat 3, no, 0, 0
+
+		@uniforms = object.clone uniforms
 
 	render: ->
 
