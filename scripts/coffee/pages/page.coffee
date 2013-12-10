@@ -16,4 +16,8 @@ else
 
 	playgroundName = matches[1]
 
-	p = new Playground document.getElementById('the-canvas'), playgroundName
+	theCanvas = document.getElementById('the-canvas')
+
+	errorEl = document.getElementById('error')
+
+	p = new Playground theCanvas, errorEl, playgroundName

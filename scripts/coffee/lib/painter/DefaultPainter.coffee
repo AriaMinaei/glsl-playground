@@ -24,7 +24,7 @@ module.exports = class DefaultPainter
 
 	addVertexShader: (name, source) ->
 
-		@_shaders.vert[name] = @gila.getVertexShader name + (++shadersCount),
+		@_shaders.vert[name] = @gila.getVertexShader '' + name + (++shadersCount),
 
 			source
 
@@ -32,7 +32,7 @@ module.exports = class DefaultPainter
 
 	addFragmentShader: (name, source) ->
 
-		@_shaders.frag[name] = @gila.getFragmentShader name + (++shadersCount),
+		@_shaders.frag[name] = @gila.getFragmentShader '' + name + (++shadersCount),
 
 			source
 
@@ -52,13 +52,25 @@ module.exports = class DefaultPainter
 
 	setConfig: (conf) ->
 
+		@resetShaders()
+
 		@_layers = {}
+
+		for name, source of conf.fragShaders
+
+			@addFragmentShader name, source
+
+		for name, source of conf.vertShaders
+
+			@addVertexShader name, source
 
 		for name, layer of conf.layers
 
 			if layer.frag?
 
-				frag = 'do something!'
+				unless frag = @_shaders.frag[layer.frag]
+
+					throw Error "Cannot find fragment shader '#{layer.frag}'"
 
 			else
 
@@ -66,7 +78,9 @@ module.exports = class DefaultPainter
 
 			if layer.vert?
 
-				vert = 'do something!'
+				unless vert = @_shaders.vert[layer.vert]
+
+					throw Error "Cannot find vertex shader '#{layer.vert}'"
 
 			else
 

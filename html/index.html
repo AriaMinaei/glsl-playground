@@ -16,12 +16,13 @@
 
 
 
-		#msg {
+		#error {
 			position: fixed;
 			left: 10%;
 			right: 10%;
 			top: 40%;
-			bottom: 40%;
+
+			padding: 1em;
 
 			font-size: 24px;
 
@@ -31,9 +32,31 @@
 			opacity: 0;
 		}
 
-		#msg.visible {
+		#error:after {
+			content: "\0020";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: -1;
+
+			background: black;
+			opacity: 0.5;
+		}
+
+		#error.visible {
 			-webkit-transform: translateX(0) translateZ(1px);
 			opacity: 1;
+		}
+
+		#error .stack {
+			font-size: 18px;
+			opacity: 0.7;
+			white-space: pre;
+			height: 105px;
+			overflow: hidden;
+			margin-top: 1em;
 		}
 
 		.canvas-container {
@@ -49,7 +72,7 @@
 	<div class="canvas-container">
 		<canvas width="1000" height="425" id="the-canvas"></canvas>
 	</div>
-	<div id="msg">
+	<div id="error">
 		Something went wrong!
 	</div>
 <script src="/scripts/dist/.page.js"></script>

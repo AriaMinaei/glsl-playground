@@ -119,11 +119,11 @@ addResourcesListToJson = (json, dir, files) ->
 
 			if ext is '.frag'
 
-				fragShaders[filename.substr(0, filename.length - ext.length)] = filename
+				fragShaders[filename.substr(0, filename.length - ext.length)] = fs.readFileSync file, encoding: 'utf-8'
 
 			else if ext is '.vert'
 
-				vertShaders[filename.substr(0, filename.length - ext.length)] = filename
+				vertShaders[filename.substr(0, filename.length - ext.length)] = fs.readFileSync file, encoding: 'utf-8'
 
 		else if p.substr(0, 9) is 'textures/'
 
