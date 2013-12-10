@@ -1,0 +1,28 @@
+{
+  "name": "glsl-playground",
+  "version": "0.0.0",
+  "description": "(work in progress)",
+  "main": "index.js",
+  "dependencies": {
+    "cson": "~1.4.5",
+    "gila": "~0.0.0",
+    "mime": "~1.2.11",
+    "raf-timing": "~0.3.3",
+    "superagent": "~0.15.7"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AriaMinaei/glsl-playground.git"
+  },
+  "author": "Aria Minaei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AriaMinaei/glsl-playground/issues"
+  }
+}
