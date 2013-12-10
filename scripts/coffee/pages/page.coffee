@@ -1,16 +1,19 @@
-DefaultPainter = require '../lib/painter/DefaultPainter'
-Gila = require 'gila'
+Playground = require '../lib/Playground'
 
-gila = new Gila document.getElementById('the-canvas'), yes
 
-painter = new DefaultPainter gila
 
-painter.setConfig
 
-	layers:
 
-		layer1: {}
+loc = window.location.href.replace 'http://', ''
 
-		layer2: {}
+loc = loc.substr(loc.indexOf('/') + 1, loc.length)
 
-painter.play()
+unless matches =  loc.match /^playground\/([0-9]+)\/$/
+
+	throw Error "Invalid url. Url must be like: http://whatever/playground/name/"
+
+else
+
+	playgroundName = matches[1]
+
+	p = new Playground document.getElementById('the-canvas'), playgroundName
