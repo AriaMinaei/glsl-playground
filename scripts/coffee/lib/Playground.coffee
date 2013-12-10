@@ -1,4 +1,5 @@
 DefaultPainter = require './painter/DefaultPainter'
+request = require 'superagent'
 Gila = require 'gila'
 
 module.exports = class Playground
@@ -9,6 +10,10 @@ module.exports = class Playground
 
 		@painter = new DefaultPainter @gila
 
+		request
+		.get('/?getPlaygroundConfig=' + @pgName)
+		.end (res) ->
 
+			console.log res
 
 		@painter.play()
