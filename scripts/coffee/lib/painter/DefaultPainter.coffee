@@ -10,17 +10,19 @@ module.exports = class DefaultPainter
 
 		@_shaders = frag: {}, vert: {}
 
-		@addVertexShader 'default', defaultShaders.vert
+		@_addVertexShader 'default', defaultShaders.vert
 
-		@addFragmentShader 'default', defaultShaders.frag
+		@_addFragmentShader 'default', defaultShaders.frag
 
 		@paused = yes
 
-		@timing = new Timing
+		@_timing = new Timing
 
-		@timing.onEachFrame @_paint
+		@_timing.onEachFrame @_paint
 
-		@timing.start()
+		@_timing.start()
+
+		@_textures = {}
 
 		@_sharedUniforms =
 
@@ -47,9 +49,36 @@ module.exports = class DefaultPainter
 
 			return
 
+	_addTexture: (name, addr) ->
 
+		name = 'texture_' + name.replace(/[^a-zA-Z0-9\_]+/g, '_')
 
-	addVertexShader: (name, source) ->
+		return if @_textures[name]?
+
+		slot = Object.keys(@_textures).length
+
+		t = @gila.makeTexture addr
+
+		t.wrapSClampToEdge()
+		t.wrapTClampToEdge()
+
+		if addr.substr(addr.length - 3, addr.length) is 'jpg'
+
+			t.flipY()
+
+		t.assignToSlot slot
+
+		@_textures[name] = t
+
+		@_sharedUniforms[name] =
+
+			type: '1i'
+
+			array: new Int32Array [slot]
+
+		return
+
+	_addVertexShader: (name, source) ->
 
 		@_shaders.vert[name] = @gila.getVertexShader '' + name + (++shadersCount),
 
@@ -57,7 +86,7 @@ module.exports = class DefaultPainter
 
 		@
 
-	addFragmentShader: (name, source) ->
+	_addFragmentShader: (name, source) ->
 
 		@_shaders.frag[name] = @gila.getFragmentShader '' + name + (++shadersCount),
 
@@ -65,7 +94,7 @@ module.exports = class DefaultPainter
 
 		@
 
-	resetShaders: ->
+	_resetShaders: ->
 
 		@_shaders.frag =
 
@@ -77,19 +106,23 @@ module.exports = class DefaultPainter
 
 		@
 
-	setConfig: (conf) ->
+	setConfig: (conf, uri) ->
 
-		@resetShaders()
+		@_resetShaders()
 
 		@_layers = {}
 
+		for name, filename of conf.textures
+
+			@_addTexture name, uri + 'textures/' + filename
+
 		for name, source of conf.fragShaders
 
-			@addFragmentShader name, source
+			@_addFragmentShader name, source
 
 		for name, source of conf.vertShaders
 
-			@addVertexShader name, source
+			@_addVertexShader name, source
 
 		for name, layer of conf.layers
 
@@ -139,7 +172,7 @@ module.exports = class DefaultPainter
 
 		@gila.clear()
 
-		@_sharedUniforms.time.array[0] = @timing.time
+		@_sharedUniforms.time.array[0] = @_timing.time
 
 		for name, layer of @_layers
 

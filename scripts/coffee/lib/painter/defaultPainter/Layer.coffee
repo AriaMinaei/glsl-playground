@@ -14,7 +14,7 @@ module.exports = class Layer
 		 1,  1, 0
 	]
 
-	constructor: (@painter, @vert, @frag, uniforms = {}) ->
+	constructor: (@painter, @vert, @frag, @sharedUniforms) ->
 
 		@gila = @painter.gila
 
@@ -24,11 +24,15 @@ module.exports = class Layer
 
 		@_vxAttr = @program.attr('vx').enable().readAsFloat 3, no, 0, 0
 
-		@uniforms = object.clone uniforms
+		@uniforms = {}
 
 	render: ->
 
 		@program.activate()
+
+		for name, u of @sharedUniforms
+
+			@program.uniform(u.type, name).fromArray u.array
 
 		for name, u of @uniforms
 
