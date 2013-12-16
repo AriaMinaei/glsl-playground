@@ -11,6 +11,8 @@ http.createServer( (req, res) ->
 
 ).listen 9001
 
+console.log 'listening to localhost:9001'
+
 header = (res, ext = 'txt') ->
 
 	res.writeHead 200,
@@ -53,7 +55,7 @@ serve = (uri, res) ->
 
 		res.write printPlaygroundList()
 
-	else if uri.match /^playground\/[a-zA-Z0-9\_\-\.\s]\/$/
+	else if uri.match /^playground\/[a-zA-Z0-9\_\-\.\s]+\/$/
 
 		res.write fs.readFileSync '../html/index.html'
 
@@ -174,9 +176,18 @@ serveFile = (res, uri) ->
 
 	if fs.existsSync p
 
-		header res, p
+		try
 
-		res.write fs.readFileSync p
+			header res, p
+
+			res.write fs.readFileSync p
+
+		catch e
+
+			console.error uri, e
+
+			res.writeHead 404
+
 
 	else
 
