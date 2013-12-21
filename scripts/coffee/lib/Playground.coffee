@@ -44,7 +44,7 @@ module.exports = class Playground
 
 		try
 
-			@painter.setConfig config, '/playground/1/'
+			@painter.setConfig config, "/playground/#{@pgName}/"
 
 			@painter.play()
 

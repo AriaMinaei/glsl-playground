@@ -68,7 +68,7 @@ module.exports = class DefaultPainter
 
 			t.flipY()
 
-		t.assignToSlot slot
+		t.assignToUnit slot
 
 		@_textures[name] = t
 
