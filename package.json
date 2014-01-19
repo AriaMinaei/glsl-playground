@@ -1,13 +1,14 @@
 {
   "name": "glsl-playground",
-  "version": "0.0.0",
+  "version": "0.1.0-beta.1",
   "description": "(work in progress)",
   "main": "index.js",
   "dependencies": {
     "cson": "~1.4.5",
-    "gila": "~0.0.0",
+    "gila": "*",
+    "raf-timing": "*",
+    "utila": "*",
     "mime": "~1.2.11",
-    "raf-timing": "~0.3.3",
     "superagent": "~0.15.7"
   },
   "devDependencies": {
