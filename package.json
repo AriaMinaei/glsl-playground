@@ -1,6 +1,6 @@
 {
   "name": "glsl-playground",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-beta.4",
   "description": "(work in progress)",
   "main": "index.js",
   "dependencies": {

@@ -192,7 +192,7 @@ module.exports = (playgroundPath, port) ->
 
 		else
 
-			throw Error "Cannot serve '#{uri}'"
+			console.log "Cannot serve '#{uri}'"
 
 		if fs.existsSync p
 
