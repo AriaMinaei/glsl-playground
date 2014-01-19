@@ -4,6 +4,8 @@ path = require 'path'
 cson = require 'cson'
 fs = require 'fs'
 
+dir = path.dirname(module.filename)
+
 module.exports = (playgroundPath, port) ->
 
 	http.createServer( (req, res) ->
@@ -59,7 +61,7 @@ module.exports = (playgroundPath, port) ->
 
 		else if uri.match /^playground\/[a-zA-Z0-9\_\-\.\s]+\/$/
 
-			res.write fs.readFileSync '../html/index.html'
+			res.write fs.readFileSync path.join(dir, '../../../html/index.html')
 
 		else if m = uri.match /^\?getPlaygroundConfig\=([a-zA-Z0-9\_\s\-\.]+)/
 
@@ -174,7 +176,23 @@ module.exports = (playgroundPath, port) ->
 
 		uri = uri.replace /\.\./g, ''
 
-		p = path.join '..', uri
+		console.log uri
+
+		if uri is 'scripts/dist/page.js'
+
+			p = path.join dir, '../../dist/page.js'
+
+		else if uri.substr(0, 10) is 'playground'
+
+			addr = uri.substr(11, uri.length)
+
+			addr = path.join playgroundPath, addr
+
+			p = addr
+
+		else
+
+			throw Error "Cannot serve '#{uri}'"
 
 		if fs.existsSync p
 
