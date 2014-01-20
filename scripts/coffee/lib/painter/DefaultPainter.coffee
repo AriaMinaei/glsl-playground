@@ -46,8 +46,8 @@ module.exports = class DefaultPainter
 
 			window.addEventListener 'mousemove', ->
 
-				pos[0] = (event.x / window.innerHeight)
-				pos[1] = (event.y / window.innerWidth)
+				pos[0] = (event.x / window.innerWidth)
+				pos[1] = (event.y / window.innerHeight)
 
 			return
 
