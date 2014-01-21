@@ -10,7 +10,11 @@ module.exports = class DefaultPainter
 
 		@_layers = {}
 
+		@_usesFrameBuffers = no
+
 		@_frameBufferInstructions = {}
+
+		@_frameBuffers = []
 
 		@_shaders = frag: {}, vert: {}
 
@@ -130,7 +134,7 @@ module.exports = class DefaultPainter
 
 		layerNumber = -1
 
-		needFbo = no
+		needFb = no
 
 		for name, layer of conf.layers
 
@@ -162,7 +166,7 @@ module.exports = class DefaultPainter
 
 					throw Error "Layer 0 cannot read any frame buffers"
 
-				needFbo = yes
+				haveFbs = yes
 
 			useFb = Boolean layer.useFb
 
@@ -177,8 +181,11 @@ module.exports = class DefaultPainter
 				@_layers[name].blend yes, layer.blend.src, layer.blend.dst
 
 		@_frameBufferInstructions = {}
+		@_usesFrameBuffers = no
 
-		if needFbo
+		if haveFbs
+
+			@_usesFrameBuffers = yes
 
 			do @_updateFrameBufferInstructions
 
@@ -186,7 +193,53 @@ module.exports = class DefaultPainter
 
 	_updateFrameBufferInstructions: ->
 
+		fbi = @_frameBufferInstructions
 
+		# let's make sure framebuffer instructions are in order
+		for name, layer of @_layers
+
+			fbi[name] = null
+
+		# let's find the last layer that uses fb and put an 'end'
+		# instruction on it
+		for name, i in Object.keys(@_layers).reverse()
+
+			layer = @_layers[name]
+
+			if layer.usesFb
+
+				fbi[name] = 'end'
+
+				lastLayer = Object.keys(@_layers).length - i
+
+				break
+
+		# the first layer will have a 'start' instruction on it
+		fbi[Object.keys(@_layers)[0]] = 'start'
+
+		layersInBetween = Object.keys(@_layers)[1...lastLayer - 1]
+
+		# for all the layers in between...
+		for name in layersInBetween
+
+			layer = @_layers[name]
+
+			# we instruct to swas the frame buffers
+			if layer.usesFb
+
+				fbi[name] = 'swap'
+
+		if @_frameBuffers.length is 0
+
+			for i in [0..1]
+
+				@_frameBuffers.push @gila.makeFrameBuffer()
+				.bind()
+				.useRenderBufferForDepth()
+				.useTextureForColor()
+				.unbind()
+
+		return
 
 	play: ->
 
@@ -214,7 +267,51 @@ module.exports = class DefaultPainter
 
 		@_sharedUniforms.time.array[0] = @_timing.time
 
+		# if we don't use frame buffers, just render all layers
+		unless @_usesFrameBuffers
+
+			delete @_sharedUniforms['fb']
+
+			for name, layer of @_layers
+
+				layer.render()
+
+			return
+
+		currentFb = @_frameBuffers[0]
+
+		unless @_sharedUniforms['fb']?
+
+			@_sharedUniforms['fb'] =
+
+				type: '1i'
+
+				array: new Int32Array [0]
+
 		for name, layer of @_layers
+
+			instruction = @_frameBufferInstructions[name]
+
+			if instruction is 'start'
+
+				currentFb.bind()
+
+			else if instruction in ['end', 'swap']
+
+				currentFb.unbind()
+				@_sharedUniforms.fb.array[0] = currentFb.getColorTexture().assignToAUnit()
+
+				if instruction is 'swap'
+
+					if currentFb is @_frameBuffers[0]
+
+						currentFb = @_frameBuffers[1]
+
+					else
+
+						currentFb = @_frameBuffers[0]
+
+					currentFb.bind()
 
 			layer.render()
 
