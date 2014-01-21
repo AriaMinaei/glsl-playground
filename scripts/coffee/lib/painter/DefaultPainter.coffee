@@ -10,6 +10,8 @@ module.exports = class DefaultPainter
 
 		@_layers = {}
 
+		@_frameBufferInstructions = {}
+
 		@_shaders = frag: {}, vert: {}
 
 		@_addVertexShader 'default', defaultShaders.vert
@@ -59,7 +61,7 @@ module.exports = class DefaultPainter
 
 		slot = Object.keys(@_textures).length
 
-		t = @gila.makeTexture addr
+		t = @gila.makeImageTexture addr
 
 		t.wrapSClampToEdge()
 		t.wrapTClampToEdge()
@@ -126,7 +128,13 @@ module.exports = class DefaultPainter
 
 			@_addVertexShader name, source
 
+		layerNumber = -1
+
+		needFbo = no
+
 		for name, layer of conf.layers
+
+			layerNumber++
 
 			if layer.frag?
 
@@ -148,7 +156,17 @@ module.exports = class DefaultPainter
 
 				vert = @_shaders.vert['default']
 
-			@_layers[name] = new Layer @, vert, frag, @_sharedUniforms
+			if layer.useFb
+
+				if layerNumber is 0
+
+					throw Error "Layer 0 cannot read any frame buffers"
+
+				needFbo = yes
+
+			useFb = Boolean layer.useFb
+
+			@_layers[name] = new Layer @, vert, frag, @_sharedUniforms, useFb
 
 			unless layer.blend?
 
@@ -158,7 +176,17 @@ module.exports = class DefaultPainter
 
 				@_layers[name].blend yes, layer.blend.src, layer.blend.dst
 
+		@_frameBufferInstructions = {}
+
+		if needFbo
+
+			do @_updateFrameBufferInstructions
+
 		@
+
+	_updateFrameBufferInstructions: ->
+
+
 
 	play: ->
 
@@ -181,10 +209,6 @@ module.exports = class DefaultPainter
 		return if @paused
 
 		@gila.blending.enable()
-
-
-
-		gl = @gila.gl
 
 		@gila.clear()
 

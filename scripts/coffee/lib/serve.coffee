@@ -2,9 +2,9 @@ mime = require 'mime'
 http = require 'http'
 path = require 'path'
 cson = require 'cson'
-fs = require 'fs'
+fs = require 'graceful-fs'
 
-dir = path.dirname(module.filename)
+rootDir = path.resolve path.dirname(module.filename), '../../../'
 
 module.exports = (playgroundPath, port) ->
 
@@ -61,7 +61,7 @@ module.exports = (playgroundPath, port) ->
 
 		else if uri.match /^playground\/[a-zA-Z0-9\_\-\.\s]+\/$/
 
-			res.write fs.readFileSync path.join(dir, '../../../html/index.html')
+			res.write fs.readFileSync path.join(rootDir, 'html/index.html')
 
 		else if m = uri.match /^\?getPlaygroundConfig\=([a-zA-Z0-9\_\s\-\.]+)/
 
@@ -180,7 +180,7 @@ module.exports = (playgroundPath, port) ->
 
 		if uri is 'scripts/dist/page.js'
 
-			p = path.join dir, '../../dist/page.js'
+			p = path.join rootDir, 'scripts/dist/page.js'
 
 		else if uri.substr(0, 10) is 'playground'
 

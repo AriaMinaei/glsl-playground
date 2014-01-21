@@ -9,7 +9,8 @@
     "raf-timing": "*",
     "utila": "*",
     "mime": "~1.2.11",
-    "superagent": "~0.15.7"
+    "superagent": "~0.15.7",
+    "graceful-fs": "~2.0.1"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3"

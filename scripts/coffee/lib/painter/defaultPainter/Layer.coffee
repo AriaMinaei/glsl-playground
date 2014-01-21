@@ -14,7 +14,7 @@ module.exports = class Layer
 		 1,  1, 0
 	]
 
-	constructor: (@painter, @vert, @frag, @sharedUniforms) ->
+	constructor: (@painter, @vert, @frag, @sharedUniforms, @usesFb) ->
 
 		@gila = @painter.gila
 
